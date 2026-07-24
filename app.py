@@ -33,6 +33,7 @@ if not GROQ_API_KEY:
     st.stop()
 
 
+
 # ==========================================
 # LOAD PDF ONLY ONCE
 # ==========================================
@@ -40,7 +41,15 @@ if not GROQ_API_KEY:
 @st.cache_resource
 def load_vector_database():
 
-    pdf_path = r"C:\Users\jyoti singh\Data Science\gen ai\SBI-BANKING\data\SBI - CPCR Booklet (English)_14.07.2025.pdf"
+
+
+BASE_DIR = os.path.dirname(os.path.abspath(r"C:\Users\jyoti singh\Data Science\gen ai\SBI-BANKING\data\SBI_CPCR_Booklet_.pdf"))
+
+pdf_path = os.path.join(
+    BASE_DIR,
+    "data",
+    "SBI_CPCR_Booklet.pdf"
+)
 
     loader = PyPDFLoader(pdf_path)
     documents = loader.load()
