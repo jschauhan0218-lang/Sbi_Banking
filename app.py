@@ -32,9 +32,11 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
+
 if not GROQ_API_KEY:
     st.error("GROQ_API_KEY not found.")
     st.stop()
+
 
 
 # ==========================================
@@ -47,15 +49,13 @@ def load_vector_database():
     # Project folder
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+
     # PDF path
     pdf_path = os.path.join(
         BASE_DIR,
         "data",
         "SBI_CPCR_Booklet.pdf"
     )
-
-    print("PDF Path:", pdf_path)
-    print("Exists:", os.path.exists(pdf_path))
 
 
     if not os.path.exists(pdf_path):
@@ -71,14 +71,17 @@ def load_vector_database():
     documents = loader.load()
 
 
-    # Split text into chunks
+
+    # Split documents
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=200
     )
 
+
     chunks = splitter.split_documents(documents)
+
 
 
     # Create embeddings
@@ -88,7 +91,8 @@ def load_vector_database():
     )
 
 
-    # Create vector database
+
+    # Create FAISS database
 
     vector_db = FAISS.from_documents(
         chunks,
@@ -100,7 +104,7 @@ def load_vector_database():
 
 
 
-# Load database
+# Load vector database
 
 with st.spinner("Loading Banking Documents..."):
 
@@ -121,7 +125,7 @@ llm = ChatGroq(
 
 
 # ==========================================
-# USER INPUT
+# USER QUESTION
 # ==========================================
 
 question = st.text_input(
@@ -143,7 +147,7 @@ if st.button("Get Answer"):
     else:
 
 
-        # Retrieve relevant documents
+        # Search relevant chunks
 
         docs = vector_db.similarity_search(
             question,
@@ -151,7 +155,7 @@ if st.button("Get Answer"):
         )
 
 
-        # Create context
+        # Prepare context
 
         context = "\n\n".join(
             doc.page_content
@@ -185,11 +189,12 @@ Answer:
 """
 
 
-        # Generate answer
+        # Generate response
 
         with st.spinner("Generating Answer..."):
 
             response = llm.invoke(prompt)
+
 
 
         st.success("Answer")
